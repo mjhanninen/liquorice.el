@@ -104,8 +104,8 @@ This function is internal to the library."
 
 (defun liquorice-env-to-internal-desc (env)
   "Converts the environment ENV (normally after the statements of
-the DSL has been \"executed\" into internal description of faces
-that is the end result of \"executing\" the DSL.
+the DSL have been \"executed\") into an internal description of
+faces that is the end result of \"executing\" the DSL.
 
 This function is internal to the library."
   (let (result)
