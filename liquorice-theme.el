@@ -51,6 +51,15 @@
            (bg passive-background
                fringe)
 
+           (fg bright-red
+               warning)
+
+           (attrs (:underline t)
+                  link
+                  link-visited)
+           (fg shakespeare-blue link)
+           (fg tussock-brown link-visited)
+
            (attrs (:background dark-red
                    :foreground nil)
                   hl-line)
@@ -95,6 +104,18 @@
            (attrs (:foreground white
                    :background bright-red)
                   isearch)
+
+           ;; Outline
+
+           (fg white
+               outline-1
+               outline-2
+               outline-3
+               outline-4
+               outline-5
+               outline-6
+               outline-7
+               outline-8)
 
            ;; Font-lock
 
