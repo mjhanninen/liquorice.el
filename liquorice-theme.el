@@ -173,6 +173,36 @@
                compilation-warning)
 
            (fg chateu-green
-               compilation-info))))
+               compilation-info)
+
+           ;; Markdown
+
+           (fg shakespeare-blue
+               markdown-blockquote-face
+               markdown-comment-face)
+           (fg white
+               markdown-header-face
+               markdown-header-face-1
+               markdown-header-face-2
+               markdown-header-face-3
+               markdown-header-face-4
+               markdown-header-face-5
+               markdown-header-face-6)
+           (fg white
+               markdown-bold-face
+               markdown-italic-face)
+           (fg chateu-green
+               markdown-inline-code-face
+               markdown-pre-face)
+           (fg tussock-brown
+               markdown-link-face
+               markdown-link-title-face
+               markdown-url-face
+               markdown-reference-face)
+           (fg celeste-gray
+               markdown-list-face
+               markdown-math-face)
+           (fg bright-red
+               markdown-missing-link-face))))
 
 (provide-theme 'liquorice)
