@@ -32,9 +32,6 @@
                (shakespeare-blue "#4f9db0")
                ;; For names of stuff at the point of definition.
                (tussock-brown "#b99246")
-               ;; Comments and lower priority information.
-               ;; NB: Not used; will go out of door pretty soon.
-               (falcon-brown "#755169")
                ;; The primary attention color
                (bright-red "#ff0000")
                ;; The secondary attention color
