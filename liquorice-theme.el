@@ -127,6 +127,8 @@
 
            (fg chateu-green
                font-lock-string-face
+               font-lock-regexp-grouping-backslash
+               font-lock-regexp-grouping-construct
                font-lock-constant-face)
 
            (fg shakespeare-blue
