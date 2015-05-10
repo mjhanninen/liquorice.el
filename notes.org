@@ -1,0 +1,14 @@
+* Task list
+
+** DONE Check existing faces
+** TODO Don't define non-existing faces
+** TODO Define faces for diff and magit-diff modes
+** TODO Define faces for eshell mode
+** TODO Define faces for magit mode
+** TODO Define faces for org-mode
+** TODO Define a dark-on-light-theme theme
+** TODO Define a redshift theme
+** TODO Experiment a dark-and-light-on-medium theme
+** TODO Make experimenting easier
+   Either through documenting easiest ways for trying out colors or creating
+   some tooling for it.
