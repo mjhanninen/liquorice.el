@@ -16,6 +16,7 @@
 
 (require 'cl-lib)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Utilities for specifying colors
 
 (defun liquorice-int-to-hex (x)
@@ -52,6 +53,7 @@ This function is internal to the library."
             (liquorice-int-to-hex g)
             (liquorice-int-to-hex b))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Utilities for handling plists
 
 (defun liquorice-plist-merge (left-plist right-plist)
@@ -88,7 +90,21 @@ This function is internal to the library."
                         result))))
     result))
 
-;;; The DSL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Utilities for inspecting existing faces
+
+(defun liquorice-existing-faces (faces)
+  "Takes a list of FACES and filters out those that are not
+currently among (FACE-LIST)."
+  (let ((all-faces (make-hash-table)))
+    (dolist (face (face-list))
+      (puthash face t all-faces))
+    (cl-remove-if-not (lambda (f)
+                        (gethash f all-faces nil))
+                      faces)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; The DSL
 
 (defun liquorice-set-attrs (env attrs faces)
   "Updates the environment ENV destructively so that for all
