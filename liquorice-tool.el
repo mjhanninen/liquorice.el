@@ -20,7 +20,7 @@
 ;;; current state should be considered entirely in as unstable of internal to
 ;;; the library.
 
-(provide 'liquorice-tool)
+(require 'faces)
 
 ;;; References:
 ;;;
@@ -47,24 +47,16 @@
   (cl-destructuring-bind (r g b) rgb
     (liquorice-rgb r g b)))
 
-(defun hex-to-float (h)
-  (/ (float (string-to-number h 16))
-     (1- (expt 16.0 (length h)))))
-
-(defun string-to-rgb (h)
-  (let ((l (length h)))
-    (unless (and (or (= l 4) (= l 7))
-                 (string= (substring h 0 1) "#"))
-      (error "Expecting a string of the form \"#RGB\" or \"#RRGGBB\"."))
-    (cond
-     ((= l 4)
-      (list (hex-to-float (substring h 1 2))
-            (hex-to-float (substring h 2 3))
-            (hex-to-float (substring h 3 4))))
-     ((= l 7)
-      (list (hex-to-float (substring h 1 3))
-            (hex-to-float (substring h 3 5))
-            (hex-to-float (substring h 5 7)))))))
+(defun string-to-rgb (color)
+  (let ((triplet (x-color-values color)))
+    (when triplet
+      (let ((denom (if (and (string-prefix-p "#" color)
+                            (= (length color) 10))
+                       17821440.0
+                     65280.0)))
+        (mapcar (lambda (x)
+                  (/ (float x) denom))
+                triplet)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Primitive conversions between color spaces
@@ -242,3 +234,5 @@
                             to-lch
                             alpha))))
             (linspace 0.0 1.0 steps))))
+
+(provide 'liquorice-tool)
