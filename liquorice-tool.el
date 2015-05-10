@@ -61,7 +61,7 @@
       (list (hex-to-float (substring h 1 2))
             (hex-to-float (substring h 2 3))
             (hex-to-float (substring h 3 4))))
-     ((= (length h) 7)
+     ((= l 7)
       (list (hex-to-float (substring h 1 3))
             (hex-to-float (substring h 3 5))
             (hex-to-float (substring h 5 7)))))))
