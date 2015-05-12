@@ -15,3 +15,12 @@
 ** TODO Add LCH(ab) color space
 ** TODO Add color temperature corrections
 ** TODO Add lighten/darken/saturate from color.el
+
+* Color temperature corrections
+
+** Blackbody colors
+
+   This site lists RGB values for blackbody colors for various different
+   temperatures:
+
+   - [[http://www.vendian.org/mncharity/dir3/blackbody/][What color is a blackbody? - some pixel rgb values]]
