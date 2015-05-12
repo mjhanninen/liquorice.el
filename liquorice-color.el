@@ -42,6 +42,20 @@ COLOR-NAME-TO-RGB."
 
 ;;;; Primary conversions between color spaces
 
+;;; Conversions between sRGB and HSL spaces
+
+(defun liquorice-srgb-to-hsl (srgb-color)
+  "Converts SRGB-COLOR from the sRGB color space to the HSL color
+space."
+  (assert (eq (car srgb-color) :srgb) "Expected an sRGB triplet")
+  (cons :hsl (apply #'color-hsl-to-rgb (cdr srgb-color))))
+
+(defun liquorice-hsl-to-srgb (hsl-color)
+  "Converts HSL-COLOR from the HSL color space to the sRGB color
+space."
+  (assert (eq (car hsl-color) :srgb) "Expected an HSL triplet")
+  (cons :srgb (apply #'color-rgb-to-hsl (cdr hsl-color))))
+
 ;;; Conversions between sRGB and XYZ spaces
 
 (defun liquorice-xyz-to-srgb (xyz-color)
@@ -96,7 +110,7 @@ color space. Assumes CIE D65 white point."
 
 (defun liquorice-luv-to-xyz (luv-color)
   "Converts LUV-COLOR from the CIE-Luv color space to the XYZ
-color space. Assume CIE D65 white point."
+color space. Assumes CIE D65 white point."
   (assert (eq (car luv-color) :luv) "Expected a Luv triplet")
   (pcase-let* ((`(,L ,u ,v) (cdr luv-color))
                (`(,ref-x ,ref-y ,ref-z) color-d65-xyz)
