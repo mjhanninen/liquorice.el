@@ -126,22 +126,24 @@ color space. Assume CIE D65 white point."
 
 ;;;; Conversions between Luv and LCH(uv) spaces
 
-(defun luv-to-lch-uv (luv)
-  (if (eq (car luv) :luv)
-      (cl-destructuring-bind (L u v) (cdr luv)
-        (let* ((C (sqrt (+ (* u u) (* v v))))
+(defun liquorice-luv-to-lch-uv (luv-color)
+  "Converts LUV-COLOR from the CIE-Luv color space to the LCH(uv)
+color space."
+  (assert (eq (car luv-color) :luv) "Expected a Luv triplet")
+  (pcase-let* ((`(,L ,u ,v) (cdr luv-color))
+               (C (sqrt (+ (* u u) (* v v))))
                (H (mod (* 180.0 (/ (atan v u) pi)) 360.0)))
-          (list :lch-uv L C H)))
-    (error "Expected a Luc triplet")))
+    (list :lch-uv L C H)))
 
-(defun lch-uv-to-luv (lch)
-  (if (eq (car lch) :lch-uv)
-      (cl-destructuring-bind (L C H) (cdr lch)
-        (let* ((h (/ (* pi H) 180.0))
+(defun liquorice-lch-uv-to-luv (lch-color)
+  "Converts LCH-COLOR from the LCH(uv) color space to the CIE-Luv
+color space."
+  (assert (eq (car lch-color) :lch-uv) "Expected a LCH(uv) triplet")
+  (pcase-let* ((`(,L ,C ,H) (cdr lch-color))
+               (h (/ (* pi H) 180.0))
                (u (* C (cos h)))
                (v (* C (sin h))))
-          (list :luv L u v)))
-    (error "Expected a LCH(uv) triplet")))
+    (list :luv L u v)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; TRANSITIVE CONVERSIONS
