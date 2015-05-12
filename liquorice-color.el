@@ -20,7 +20,9 @@
 ;;; current state should be considered entirely in as unstable of internal to
 ;;; the library.
 
+(require 'cl-lib)
 (require 'color)
+(require 'pcase)
 
 ;;; References:
 ;;;
@@ -66,42 +68,47 @@ COLOR-NAME-TO-RGB."
 
 ;;;; Conversions between XYZ and Luv spaces
 
-(defun xyz-to-luv (xyz)
-  (if (eq (car xyz) :xyz)
-      (cl-destructuring-bind (x y z) (cdr xyz)
-        (let* ((y-rel (/ y d65-ref-y))
-               (L (if (> y-rel cie-epsilon)
+(defun liquorice-xyz-to-luv (xyz-color)
+  "Converts XYZ-COLOR from the XYZ color space to the CIE-Luv
+color space. Assumes CIE D65 white point."
+  (assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
+  (pcase-let* ((`(,x ,y ,z) (cdr xyz-color))
+               (`(,ref-x ,ref-y ,ref-z) color-d65-xyz)
+               (y-rel (/ y ref-y))
+               (L (if (> y-rel color-cie-ε)
                       (- (* 116.0
                             (expt y-rel (/ 1.0 3.0)))
                          16.0)
-                    (* cie-kappa y-rel)))
+                    (* color-cie-̨̨κ y-rel)))
                (denom-val (+ x
                              (* 15.0 y)
                              (* 3.0 z)))
-               (denom-ref (+ d65-ref-x
-                             (* 15.0 d65-ref-y)
-                             (* 3.0 d65-ref-z)))
+               (denom-ref (+ ref-x
+                             (* 15.0 ref-y)
+                             (* 3.0 ref-z)))
                (u (* L 13.0 4.0
                      (- (/ x denom-val)
-                        (/ d65-ref-x denom-ref))))
+                        (/ ref-x denom-ref))))
                (v (* L 13.0 9.0
                      (- (/ y denom-val)
-                        (/ d65-ref-y denom-ref)))))
-          (list :luv L u v)))
-        (error "Expected a XYZ triplet")))
+                        (/ ref-y denom-ref)))))
+    (list :luv L u v)))
 
-(defun luv-to-xyz (luv)
-  (if (eq (car luv) :luv)
-      (cl-destructuring-bind (L u v) (cdr luv)
-        (let* ((inv-denom-ref (/ 1.0
-                                 (+ d65-ref-x
-                                    (* 15.0 d65-ref-y)
-                                    (* 3.0 d65-ref-z))))
-               (u-ref (* 4.0 d65-ref-x inv-denom-ref))
-               (v-ref (* 9.0 d65-ref-y inv-denom-ref))
-               (y (if (> L (* cie-kappa cie-epsilon))
+(defun liquorice-luv-to-xyz (luv-color)
+  "Converts LUV-COLOR from the CIE-Luv color space to the XYZ
+color space. Assume CIE D65 white point."
+  (assert (eq (car luv-color) :luv) "Expected a Luv triplet")
+  (pcase-let* ((`(,L ,u ,v) (cdr luv-color))
+               (`(,ref-x ,ref-y ,ref-z) color-d65-xyz)
+               (inv-denom-ref (/ 1.0
+                                 (+ ref-x
+                                    (* 15.0 ref-y)
+                                    (* 3.0 ref-z))))
+               (u-ref (* 4.0 ref-x inv-denom-ref))
+               (v-ref (* 9.0 ref-y inv-denom-ref))
+               (y (if (> L (* color-cie-̨̨κ color-cie-ε))
                       (expt (/ (+ L 16.0) 116.0) 3.0)
-                    (/ L cie-kappa)))
+                    (/ L color-cie-̨̨κ)))
                (a (/ (- (/ (* 52.0 L)
                            (+ u (* 13.0 L u-ref)))
                         1.0)
@@ -115,8 +122,7 @@ COLOR-NAME-TO-RGB."
                (x (/ (- d b)
                      (- a c)))
                (z (+ (* a x) b)))
-          (list :xyz x y z)))
-    (error "Expected a Luv triplet")))
+    (list :xyz x y z)))
 
 ;;;; Conversions between Luv and LCH(uv) spaces
 
