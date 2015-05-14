@@ -14,12 +14,6 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;;; WORK IN PROGRESS
-
-;;; Please do note that this files is in work-in-progress condition and in its
-;;; current state should be considered entirely in as unstable of internal to
-;;; the library.
-
 (require 'cl-lib)
 (require 'color)
 (require 'pcase)
@@ -40,9 +34,13 @@ COLOR-NAME-TO-RGB."
       ;; investigate.
       (cons :srgb triplet))))
 
-;;;; Primary conversions between color spaces
+;;;; Explicit conversions between color spaces
 
 ;;; Conversions between sRGB and HSL spaces
+
+;;; TODO: Test that `color-hsl-to-rgb' and `color-rgb-to-hsl' really return
+;;; correct values. Sometimes I get somewhat unbelievable results but haven't
+;;; rendered them to actual colors so don't know for sure.
 
 (defun liquorice-srgb-to-hsl (srgb-color)
   "Converts SRGB-COLOR from the sRGB color space to the HSL color
@@ -53,7 +51,7 @@ space."
 (defun liquorice-hsl-to-srgb (hsl-color)
   "Converts HSL-COLOR from the HSL color space to the sRGB color
 space."
-  (assert (eq (car hsl-color) :srgb) "Expected an HSL triplet")
+  (assert (eq (car hsl-color) :hsl) "Expected an HSL triplet")
   (cons :srgb (apply #'color-rgb-to-hsl (cdr hsl-color))))
 
 ;;; Conversions between sRGB and XYZ spaces
@@ -80,7 +78,28 @@ space."
   (assert (eq (car lab-color) :lab) "Expected a Lab triplet")
   (cons :xyz (apply #'color-lab-to-xyz (cdr lab-color))))
 
-;;;; Conversions between XYZ and Luv spaces
+;;; Conversions between Lab and LCH(ab) spaces
+
+(defun liquorice-lab-to-lch-ab (lab-color)
+  "Converts LAB-COLOR from the CIE-Lab color space to the LCH(ab)
+color space."
+  (assert (eq (car lab-color) :lab) "Expected a Lab triplet")
+  (pcase-let* ((`(,L ,a ,b) (cdr lab-color))
+               (C (sqrt (+ (* a a) (* b b))))
+               (H (mod (* 180.0 (/ (atan b a) pi)) 360.0)))
+    (list :lch-ab L C H)))
+
+(defun liquorice-lch-ab-to-lab (lch-color)
+  "Converts LCH-COLOR from the LCH(ab) color space to the CIE-Lab
+color space."
+  (assert (eq (car lch-color) :lch-ab) "Expected a LCH(ab) triplet")
+  (pcase-let* ((`(,L ,C ,H) (cdr lch-color))
+               (h (/ (* pi H) 180.0))
+               (a (* C (cos h)))
+               (b (* C (sin h))))
+    (list :lab L a b)))
+
+;;; Conversions between XYZ and Luv spaces
 
 (defun liquorice-xyz-to-luv (xyz-color)
   "Converts XYZ-COLOR from the XYZ color space to the CIE-Luv
@@ -93,7 +112,7 @@ color space. Assumes CIE D65 white point."
                       (- (* 116.0
                             (expt y-rel (/ 1.0 3.0)))
                          16.0)
-                    (* color-cie-̨̨κ y-rel)))
+                    (* color-cie-κ y-rel)))
                (denom-val (+ x
                              (* 15.0 y)
                              (* 3.0 z)))
@@ -120,9 +139,9 @@ color space. Assumes CIE D65 white point."
                                     (* 3.0 ref-z))))
                (u-ref (* 4.0 ref-x inv-denom-ref))
                (v-ref (* 9.0 ref-y inv-denom-ref))
-               (y (if (> L (* color-cie-̨̨κ color-cie-ε))
+               (y (if (> L (* color-cie-κ color-cie-ε))
                       (expt (/ (+ L 16.0) 116.0) 3.0)
-                    (/ L color-cie-̨̨κ)))
+                    (/ L color-cie-κ)))
                (a (/ (- (/ (* 52.0 L)
                            (+ u (* 13.0 L u-ref)))
                         1.0)
@@ -138,7 +157,7 @@ color space. Assumes CIE D65 white point."
                (z (+ (* a x) b)))
     (list :xyz x y z)))
 
-;;;; Conversions between Luv and LCH(uv) spaces
+;;; Conversions between Luv and LCH(uv) spaces
 
 (defun liquorice-luv-to-lch-uv (luv-color)
   "Converts LUV-COLOR from the CIE-Luv color space to the LCH(uv)
@@ -159,8 +178,7 @@ color space."
                (v (* C (sin h))))
     (list :luv L u v)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; TRANSITIVE CONVERSIONS
+;;;; Implicit conversions
 
 (defun liquorice-to-xyz (color)
   "Converts COLOR into its CIE XYZ representation. COLOR should
@@ -176,14 +194,21 @@ form
 
     (:XYZ X Y Z)"
   (if (stringp color)
-      (srgb-to-xyz (liquorice-string-to-color color))
-    (case (car color)
+      (liquorice-srgb-to-xyz
+       (liquorice-string-to-color color))
+    (pcase (car color)
       (:xyz color)
-      (:rgb (srgb-to-xyz color))
-      (:luv (luv-to-xyz color))
-      (:lch-uv (luv-to-xyz (lch-uv-to-luv color))))))
+      (:srgb (liquorice-srgb-to-xyz color))
+      (:hsl (liquorice-srgb-to-xyz
+             (liquorice-hsl-to-srgb color)))
+      (:lab (liquorice-lab-to-xyz color))
+      (:lch-ab (liquorice-lab-to-xyz
+                (liquorice-lch-ab-to-lab color)))
+      (:luv (liquorice-luv-to-xyz color))
+      (:lch-uv (liquorice-luv-to-xyz
+                (liquorice-lch-uv-to-luv color))))))
 
-(defmacro liquorice-unless-in-space (color space &rest body)
+(defmacro liquorice-unless-already (color space &rest body)
   "An *internal* macro for performing some color space conversion
 calculations only if the color space of COLOR is not SPACE.
 Otherwise the macro just returns (the evaluated value of) COLOR."
@@ -195,26 +220,59 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                 ,color-sym)
            ,@body))))
 
-(defun to-rgb (color)
-  (liquorice-unless-in-space color :rgb
-    (xyz-to-srgb (liquorice-to-xyz color))))
+(defun liquorice-to-srgb (color)
+  (liquorice-unless-already color :srgb
+    (liquorice-xyz-to-srgb
+     (liquorice-to-xyz color))))
 
-(defun to-luv (color)
-  (liquorice-unless-in-space color :luv
-    (xyz-to-luv (liquorice-to-xyz color))))
+(defun liquorice-to-hsl (color)
+  (liquorice-unless-already color :hsl
+    (liquorice-srgb-to-hsl
+     (liquorice-to-srgb color))))
 
-(defun to-lch-uv (color)
-  (liquorice-unless-in-space color :lch-uv
-    (luv-to-lch-uv (to-luv color))))
+(defun liquorice-to-lab (color)
+  (liquorice-unless-already color :lab
+    (liquorice-xyz-to-lab
+     (liquorice-to-xyz color))))
+
+(defun liquorice-to-lch-ab (color)
+  (liquorice-unless-already color :lch-ab
+    (liquorice-lab-to-lch-ab
+     (liquorice-to-lab color))))
+
+(defun liquorice-to-luv (color)
+  (liquorice-unless-already color :luv
+    (liquorice-xyz-to-luv
+     (liquorice-to-xyz color))))
+
+(defun liquorice-to-lch-uv (color)
+  (liquorice-unless-already color :lch-uv
+    (liquorice-luv-to-lch-uv
+     (liquorice-to-luv color))))
 
 ;;;; Converting back to strings
 
-(defun color-to-string (color)
+(defun liquorice-to-string (color)
   (if (stringp color)
       color
-    (apply #'concat
-           "#"
-           (mapcar (lambda (v)
-                     (let ((i (max 0 (min 255 (round (* 255.0 v))))))
-                       (format "%02X" i)))
-                   (cdr (to-rgb color))))))
+    (pcase-let ((`(,r ,g ,b) (cdr (liquorice-to-srgb color))))
+      (color-rgb-to-hex (color-clamp r)
+                        (color-clamp g)
+                        (color-clamp b)))))
+
+;;;; Modifying colors
+
+(defun liquorice-saturate (color percent)
+  (pcase-let ((`(:hsl ,H ,S ,L) (liquorice-to-hsl color)))
+    (cons :hsl (color-saturate-hsl H S L percent))))
+
+
+(defun liquorice-blend (from-color to-color alpha)
+  (pcase-let* ((`(:lch-uv ,from-L ,from-C ,from-H) (to-lch-uv from))
+               (`(:lch-uv ,to-L ,to-C ,to-H) (to-lch-uv to)))
+    (list :lch-uv
+          (liquorice-lin-interp from-L to-L alpha)
+          (liquorice-lin-interp from-C to-C alpha)
+          (liquorice-ang-interp from-H to-H alpha))))
+
+(provide 'liquorice-color)

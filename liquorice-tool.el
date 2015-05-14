@@ -33,41 +33,6 @@
                colors))
   (insert "\n"))
 
-;;;; Interpolating inside color spaces
-
-(defun lin-interp (from to alpha)
-  (+ from (* alpha (- to from))))
-
-(defun ang-interp (from to alpha)
-  (let* ((to-alt (if (< to from)
-                     (+ to 360.0)
-                   (- to 360.0)))
-         (to-act (if (< (abs (- to from))
-                        (abs (- to-alt from)))
-                     to
-                   to-alt)))
-    (mod (lin-interp from to-act alpha) 360.0)))
-
-(defun lch-interp (from to alpha)
-  (cl-destructuring-bind (from-L from-C from-H) (cdr (to-lch-uv from))
-    (cl-destructuring-bind (to-L to-C to-H) (cdr (to-lch-uv to))
-      (list :lch-uv
-            (lin-interp from-L to-L alpha)
-            (lin-interp from-C to-C alpha)
-            (ang-interp from-H to-H alpha)))))
-
-(defun linspace (from to steps)
-  (when (> steps 1)
-    (let ((result ())
-          (n (float (1- steps))))
-      (dotimes (i steps)
-        (setq result
-              (cons (+ (float from)
-                       (* (/ (- n i) n)
-                          (float (- to from))))
-                    result)))
-      result)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Random testing stuff
 
