@@ -18,6 +18,8 @@
 (require 'color)
 (require 'pcase)
 
+(require 'liquorice-math)
+
 ;;; References:
 ;;;
 ;;; [lindbloom]: http://www.brucelindbloom.com
@@ -260,7 +262,7 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                         (color-clamp g)
                         (color-clamp b)))))
 
-;;;; Modifying colors
+;;;; Altering existing colors
 
 (defun liquorice-saturate (color percent)
   (pcase-let ((`(:hsl ,H ,S ,L) (liquorice-to-hsl color)))
@@ -268,11 +270,22 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
 
 
 (defun liquorice-blend (from-color to-color alpha)
-  (pcase-let* ((`(:lch-uv ,from-L ,from-C ,from-H) (to-lch-uv from))
-               (`(:lch-uv ,to-L ,to-C ,to-H) (to-lch-uv to)))
+  (pcase-let* ((`(:lch-uv ,from-L ,from-C ,from-H)
+                (liquorice-to-lch-uv from-color))
+               (`(:lch-uv ,to-L ,to-C ,to-H)
+                (liquorice-to-lch-uv to-color)))
     (list :lch-uv
           (liquorice-lin-interp from-L to-L alpha)
           (liquorice-lin-interp from-C to-C alpha)
           (liquorice-ang-interp from-H to-H alpha))))
+
+(defun liquorice-ramp (from-color to-color steps)
+  (let* ((from-lch (liquorice-to-lch-uv from-color))
+         (to-lch (liquorice-to-lch-uv to-color)))
+    (mapcar (lambda (alpha)
+              (liquorice-blend from-lch
+                               to-lch
+                               alpha))
+            (liquorice-linspace 0.0 1.0 steps))))
 
 (provide 'liquorice-color)

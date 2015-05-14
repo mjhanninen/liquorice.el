@@ -14,36 +14,6 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;;; WORK IN PROGRESS
-
-;;; Please do note that this files is in work-in-progress condition and in its
-;;; current state should be considered entirely in as unstable of internal to
-;;; the library.
-
 (require 'faces)
-
-(defun color-strip (colors)
-  (apply #'concat
-         (mapc (lambda (color)
-                 (let ((s "   "))
-                   (put-text-property 0 3
-                                      'face `(:background ,color)
-                                      s)
-                   (insert s)))
-               colors))
-  (insert "\n"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Random testing stuff
-
-(defun color-interp (from to steps)
-  (let* ((from-lch (to-lch-uv from))
-         (to-lch (to-lch-uv to)))
-    (mapcar (lambda (alpha)
-              (color-to-string
-               (lch-interp from-lch
-                           to-lch
-                           alpha)))
-            (linspace 0.0 1.0 steps))))
 
 (provide 'liquorice-tool)

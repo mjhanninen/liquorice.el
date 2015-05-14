@@ -12,7 +12,7 @@
 ** TODO Make experimenting easier
    Either through documenting easiest ways for trying out colors or creating
    some tooling for it.
-** TODO Add LCH(ab) color space
+** DONE Add LCH(ab) color space
 ** TODO Add color temperature corrections
 ** TODO Add lighten/darken/saturate from color.el
 
