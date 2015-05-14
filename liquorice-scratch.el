@@ -2,15 +2,14 @@
 (require 'liquorice-math)
 
 (defun insert-color-strip (&rest colors)
-  (apply #'concat
-         (mapc (lambda (color)
-                 (let ((s "   "))
-                   (put-text-property 0 3
-                                      'face `(:background
-                                              ,(liquorice-to-string color))
-                                      s)
-                   (insert s)))
-               colors))
+  (mapc (lambda (color)
+          (let ((s "   "))
+            (put-text-property 0 3
+                               'face `(:background
+                                       ,(liquorice-to-string color))
+                               s)
+            (insert s)))
+        colors)
   (insert "\n"))
 
 (defun insert-color-ramp (from-color to-color steps)
