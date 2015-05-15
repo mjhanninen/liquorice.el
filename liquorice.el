@@ -106,6 +106,36 @@ currently among (FACE-LIST)."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; The DSL
 
+;;; A *description* contains property descriptions for multiple faces and is a
+;;; monoid under merge operation.
+;;;
+;;; The merge operation is right leaning in the sense that if two descriptions
+;;; L and R are being merged (L m R) and describe the same property for the
+;;; same face then the property in the right description R is given
+;;; precedence.
+
+(defun liquorice-build-desc (attrs faces)
+  (let ((desc (make-hash-table)))
+    (dolist (face faces)
+      (puthash face attrs desc))
+    desc))
+
+(defun liquorice-merge-descs (left right)
+  (let ((res (copy-hash-table left)))
+    (maphash (lambda (face right-attrs)
+               (let* ((left-attrs (gethash face left ()))
+                      (new-attrs (liquorice-plist-merge left-attrs
+                                                        right-attrs)))
+                 (puthash face new-attrs res)))
+             right)
+    res))
+
+(defun liquorice-merge-many-descs (descs)
+  (cl-loop for desc in descs
+           with res = (make-hash-table)
+           do (setq res (liquorice-merge-descs res desc))
+           finally return res))
+
 (defun liquorice-set-attrs (env attrs faces)
   "Updates the environment ENV destructively so that for all
 faces in FACES the face attributes are amended to include
