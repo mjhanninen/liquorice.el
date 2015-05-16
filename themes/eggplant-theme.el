@@ -19,6 +19,7 @@
 ;;; just applies the faces.
 
 (require 'liquorice)
+(require 'liquorice-extra)
 
 (apply #'custom-set-faces
        (liquorice-build-face-specs
@@ -84,13 +85,12 @@
                     :foreground nil)
                    hl-line)
 
-            ;; Modelines
-
-            (bg alternative-background
-                mode-line
-                mode-line-inactive)
-            (fg fg-strong mode-line)
-            (fg fg-non-content mode-line-inactive)
+            ;; Modeline and vertical window border
+            (liquorice-mode-line-desc fg-strong
+                                      fg-non-content
+                                      alternative-background
+                                      alternative-background ; FIXME
+                                      fg-non-content)
 
             ;; Lets emphasise the buffer ID a bit
 
