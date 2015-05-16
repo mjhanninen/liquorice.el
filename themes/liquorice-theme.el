@@ -20,7 +20,7 @@
 
 (apply #'custom-theme-set-faces
        'liquorice
-       (liquorice-build-set-faces-args
+       (liquorice-build-face-specs
          (let ((black (gray 0.0))
                ;; For neutral text
                (celeste-gray "#d5d7d0")
@@ -44,177 +44,179 @@
                (undefined "violet")
                (dark-red (rgb 0.25 0.0 0.0)))
 
-           (bg black
-               default
-               linum)
+           (desc
 
-           (attrs (:weight 'normal
-                   :slant 'normal
-                   :underline nil
-                   :overline nil
-                   :strike-through nil
-                   :box nil
-                   :inherit nil)
-                  linum)
+            (bg black
+                default
+                linum)
 
-           (fg passive-foreground
-               linum)
+            (attrs (:weight 'normal
+                    :slant 'normal
+                    :underline nil
+                    :overline nil
+                    :strike-through nil
+                    :box nil
+                    :inherit nil)
+                   linum)
 
-           (bg passive-background
-               fringe)
+            (fg passive-foreground
+                linum)
 
-           (fg bright-red
-               warning)
+            (bg passive-background
+                fringe)
 
-           (attrs (:underline t)
-                  link
-                  link-visited)
-           (fg shakespeare-blue link)
-           (fg tussock-brown link-visited)
+            (fg bright-red
+                warning)
 
-           (attrs (:background dark-red
-                   :foreground nil)
-                  hl-line)
+            (attrs (:underline t)
+                   link
+                   link-visited)
+            (fg shakespeare-blue link)
+            (fg tussock-brown link-visited)
 
-           (fg celeste-gray
-               default
-               mode-line
-               mode-line-inactive)
+            (attrs (:background dark-red
+                    :foreground nil)
+                   hl-line)
 
-           ;; Lets emphasise the buffer ID a bit
+            (fg celeste-gray
+                default
+                mode-line
+                mode-line-inactive)
 
-           (attrs (:background nil
-                   :foreground yellow)
-                  mode-line-buffer-id)
+            ;; Lets emphasise the buffer ID a bit
 
-           (fg shakespeare-blue
-               minibuffer-prompt
-               completions-first-difference)
+            (attrs (:background nil
+                    :foreground yellow)
+                   mode-line-buffer-id)
 
-           (bg "navy"
-               region)
+            (fg shakespeare-blue
+                minibuffer-prompt
+                completions-first-difference)
 
-           ;; Many of the emphasis things have black typeface on color coded background
-           ;; with the yellow signalling something is oddly wrong.
+            (bg "navy"
+                region)
 
-           (fg black
-               isearch-fail
-               lazy-highlight
-               show-paren-match-face
-               show-paren-mismatch-face)
+            ;; Many of the emphasis things have black typeface on color coded background
+            ;; with the yellow signalling something is oddly wrong.
 
-           (bg shakespeare-blue
-               lazy-highlight
-               show-paren-match-face)
+            (fg black
+                isearch-fail
+                lazy-highlight
+                show-paren-match-face
+                show-paren-mismatch-face)
 
-           (bg yellow
-               isearch-fail
-               show-paren-mismatch-face)
+            (bg shakespeare-blue
+                lazy-highlight
+                show-paren-match-face)
 
-           ;; Except isearch is special
+            (bg yellow
+                isearch-fail
+                show-paren-mismatch-face)
 
-           (attrs (:foreground white
-                   :background bright-red)
-                  isearch)
+            ;; Except isearch is special
 
-           ;; Outline
+            (attrs (:foreground white
+                    :background bright-red)
+                   isearch)
 
-           (fg white
-               outline-1
-               outline-2
-               outline-3
-               outline-4
-               outline-5
-               outline-6
-               outline-7
-               outline-8)
+            ;; Outline
 
-           ;; Font-lock
+            (fg white
+                outline-1
+                outline-2
+                outline-3
+                outline-4
+                outline-5
+                outline-6
+                outline-7
+                outline-8)
 
-           (fg passive-foreground
-               font-lock-comment-face
-               font-lock-comment-delimiter-face
-               font-lock-doc-face
-               font-lock-doc-string-face)
+            ;; Font-lock
 
-           (fg chateu-green
-               font-lock-string-face
-               font-lock-regexp-grouping-backslash
-               font-lock-regexp-grouping-construct
-               font-lock-constant-face)
+            (fg passive-foreground
+                font-lock-comment-face
+                font-lock-comment-delimiter-face
+                font-lock-doc-face
+                font-lock-doc-string-face)
 
-           (fg shakespeare-blue
-               font-lock-builtin-face
-               font-lock-keyword-face
-               font-lock-type-face)
+            (fg chateu-green
+                font-lock-string-face
+                font-lock-regexp-grouping-backslash
+                font-lock-regexp-grouping-construct
+                font-lock-constant-face)
 
-           (fg tussock-brown
-               font-lock-function-name-face
-               font-lock-variable-name-face)
+            (fg shakespeare-blue
+                font-lock-builtin-face
+                font-lock-keyword-face
+                font-lock-type-face)
 
-           (fg bright-red
-               font-lock-preprocessor-face
-               font-lock-warning-face)
+            (fg tussock-brown
+                font-lock-function-name-face
+                font-lock-variable-name-face)
 
-           ;; Dired
+            (fg bright-red
+                font-lock-preprocessor-face
+                font-lock-warning-face)
 
-           (fg shakespeare-blue
-               dired-directory
-               dired-symlink)
+            ;; Dired
 
-           (fg chateu-green
-               dired-flagged
-               dired-mark
-               dired-marked)
+            (fg shakespeare-blue
+                dired-directory
+                dired-symlink)
 
-           (fg white
-               dired-header)
+            (fg chateu-green
+                dired-flagged
+                dired-mark
+                dired-marked)
 
-           (fg passive-foreground
-               dired-ignored
-               dired-warning)
+            (fg white
+                dired-header)
 
-           ;; Compilation
+            (fg passive-foreground
+                dired-ignored
+                dired-warning)
 
-           (fg shakespeare-blue
-               compilation-column-number
-               compilation-line-number)
+            ;; Compilation
 
-           (fg bright-red
-               compilation-error
-               compilation-warning)
+            (fg shakespeare-blue
+                compilation-column-number
+                compilation-line-number)
 
-           (fg chateu-green
-               compilation-info)
+            (fg bright-red
+                compilation-error
+                compilation-warning)
 
-           ;; Markdown
+            (fg chateu-green
+                compilation-info)
 
-           (fg shakespeare-blue
-               markdown-blockquote-face
-               markdown-comment-face)
-           (fg white
-               markdown-header-face
-               markdown-header-face-1
-               markdown-header-face-2
-               markdown-header-face-3
-               markdown-header-face-4
-               markdown-header-face-5
-               markdown-header-face-6)
-           (fg white
-               markdown-bold-face
-               markdown-italic-face)
-           (fg chateu-green
-               markdown-inline-code-face
-               markdown-pre-face)
-           (fg tussock-brown
-               markdown-link-face
-               markdown-link-title-face
-               markdown-url-face
-               markdown-reference-face)
-           (fg celeste-gray
-               markdown-list-face
-               markdown-math-face)
-           (fg bright-red
-               markdown-missing-link-face))))
+            ;; Markdown
+
+            (fg shakespeare-blue
+                markdown-blockquote-face
+                markdown-comment-face)
+            (fg white
+                markdown-header-face
+                markdown-header-face-1
+                markdown-header-face-2
+                markdown-header-face-3
+                markdown-header-face-4
+                markdown-header-face-5
+                markdown-header-face-6)
+            (fg white
+                markdown-bold-face
+                markdown-italic-face)
+            (fg chateu-green
+                markdown-inline-code-face
+                markdown-pre-face)
+            (fg tussock-brown
+                markdown-link-face
+                markdown-link-title-face
+                markdown-url-face
+                markdown-reference-face)
+            (fg celeste-gray
+                markdown-list-face
+                markdown-math-face)
+            (fg bright-red
+                markdown-missing-link-face)))))
 
 (provide-theme 'liquorice)

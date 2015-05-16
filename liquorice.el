@@ -15,6 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (require 'cl-lib)
+(require 'liquorice-color)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Utilities for specifying colors
@@ -33,25 +34,6 @@ hexadecimal number with 0.0 corresponding to hexadecimal 00 and
 
 This function is internal to the library."
   (liquorice-int-to-hex (round (* x 255.0))))
-
-(defun liquorice-rgb (r g b)
-  "Returns the hexadecimal specification of the color defined by
-the color triplet (R, G, B).  If all arguments are integers then
-their value range is assumed to be from 0 to 255. Otherwise,
-i.e. when at least one of the arguments is a float, the value
-range is assumed to be from 0.0 to 1.0. Arguments values are
-clamped to the assuemd value range.
-
-This function is internal to the library."
-  (if (or (floatp r) (floatp g) (floatp b))
-      (concat "#"
-              (liquorice-float-to-hex r)
-              (liquorice-float-to-hex g)
-              (liquorice-float-to-hex b))
-    (concat "#"
-            (liquorice-int-to-hex r)
-            (liquorice-int-to-hex g)
-            (liquorice-int-to-hex b))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Utilities for handling plists
@@ -107,14 +89,14 @@ currently among (FACE-LIST)."
 ;;;; The DSL
 
 ;;; A *description* contains property descriptions for multiple faces and is a
-;;; monoid under merge operation.
+;;; monoid under *merge* operation.
 ;;;
 ;;; The merge operation is right leaning in the sense that if two descriptions
 ;;; L and R are being merged (L m R) and describe the same property for the
 ;;; same face then the property in the right description R is given
 ;;; precedence.
 
-(defun liquorice-build-desc (attrs faces)
+(defun liquorice-new-desc (attrs faces)
   (let ((desc (make-hash-table)))
     (dolist (face faces)
       (puthash face attrs desc))
@@ -136,103 +118,94 @@ currently among (FACE-LIST)."
            do (setq res (liquorice-merge-descs res desc))
            finally return res))
 
-(defun liquorice-set-attrs (env attrs faces)
-  "Updates the environment ENV destructively so that for all
-faces in FACES the face attributes are amended to include
-ATTRS. Many of the DSL statements get directly translated to
-calls of this funcion.
+;;;
+
+(defmacro liquorice-proto-dsl (&rest body)
+  "This macro is internal to the library."
+  (declare (indent 0))
+  `(cl-macrolet ((desc (&rest body)
+                   `(liquorice-merge-many-descs
+                     (list ,@body))))
+     (desc ,@body)))
+
+(defmacro liquorice-build-desc (&rest body)
+  "
+
+    (LIQUORICE-BUILD-DESC
+      EXPR-1
+      ...
+      EXPR-N)
+
+Each of the expressions should evaluate to a description that are
+then merged together to a resultant description that is returned
+by the form.
+
+    (ATTRS PLIST FACE-1 ... FACE-N)
+    (BG COLOR FACE-1 ... FACE-N)
+    (FG COLOR FACE-1 ... FACE-N)
+    ()
+
+Note that many forms like `let' and `progn' return only one of
+the body forms. To enable combining expressions inside their
+bodies the following macro can be used:
+
+    (DESC
+      EXPR-1
+      ...
+      EXPR-N)
+
+Also:
+
+    (RGB RED GREEN BLUE)
+    (GRAY INTENSITY)
+
+"
+  (declare (indent 0))
+  `(cl-flet ((rgb (r g b)
+               (liquorice-srgb r g b))
+             (gray (i)
+               (liquorice-srgb i i i)))
+     (cl-macrolet ((attrs (attributes &rest faces)
+                     `(liquorice-new-desc (list ,@attributes) ',faces))
+                   (fg (color &rest faces)
+                     `(attrs (:foreground ,color) ,@faces))
+                   (bg (color &rest faces)
+                     `(attrs (:background ,color) ,@faces)))
+       (liquorice-proto-dsl ,@body))))
+
+(defun liquorice-eval-colors (elem)
+  "In case ELEM is a color converts it to its string representation.
+Otherwise return ELEM unchanged.
 
 This function is internal to the library."
-  (dolist (face faces)
-    (let* ((old-attrs (gethash face env ()))
-           (new-attrs (liquorice-plist-merge old-attrs attrs)))
-      (puthash face new-attrs env))))
+  (if (liquorice-color-p elem)
+      (liquorice-to-string elem)
+    elem))
 
-(defun liquorice-env-to-internal-desc (env)
-  "Converts the environment ENV (normally after the statements of
-the DSL have been \"executed\") into an internal description of
-faces that is the end result of \"executing\" the DSL.
+(defun liquorice-prepare-face (face spec)
+  "Builds a face description for a single face from FACE and
+SPEC.  All colors in SPEC are converted to the corresponding
+string representations.  See, for instance, `custom-set-faces'
+for the form of FACE and SPEC."
+  `(,face ((t ,@(mapcar #'liquorice-eval-colors spec)))))
+
+(defun liquorice-desc-to-face-specs (desc)
+  "Converts the given description into a form that is directly
+embeddable as an argument to functions `custom-set-faces' and
+`custom-theme-set-faces'.
 
 This function is internal to the library."
-  (let (result)
-    (maphash (lambda (face plist)
-               (setq result
-                     (cons (cons face
-                                 (liquorice-plist-sort plist))
-                           result)))
-             env)
-    (sort result
+  (let (face-specs)
+    (maphash (lambda (face attrs)
+               (push (liquorice-prepare-face face attrs)
+                     face-specs))
+             desc)
+    (sort face-specs
           (lambda (l r)
             (string< (car l)
                      (car r))))))
 
-(defmacro liquorice-base-dsl (&rest body)
-  "Minimal version of the DSL that defines only the ATTRS
-primitive. The ATTRS primitices is an imperative statement of the
-form
-
-    (ATTRS ATTRIBUTES FACE...)
-
-where attributes is a property list (KEY VALUE KEY VALUE...)
-that specifies the properties that should be applied to one or
-more FACE that follow the property list.
-
-The elements of ATTRIBUTES get evaluated individually.
-
-Each FACE should be an unquoted symbol naming a face.
-
-This macro is internal to the library."
-  (let ((env (gensym)))
-    `(let ((,env (make-hash-table)))
-       (cl-macrolet ((attrs (attributes &rest faces)
-                       `(liquorice-set-attrs ,',env
-                                             (list ,@attributes)
-                                             ',faces)))
-         ,@body)
-       (liquorice-env-to-internal-desc ,env))))
-
-(defmacro liquorice-dsl (&rest body)
-  "Extends the DSL by defining the following syntactic sugar:
-
-    (FG COLOR FACE...)
-    (BG COLOR FACE...)
-    (RGB RED GREEN BLUE)
-    (GRAY VALUE)
-
-The (FG COLOR FACE...) and (BG COLOR FACE...) forms correspond
-to (ATTRS (:FOREGROUND COLOR) FACE...) and (ATTRS (:BACKGROUND
-COLOR) FACE...) forms, correspondingly.
-
-The (RGB RED GREEN BLUE) and (GRAY VALUE) forms are functions
-defined within the DSL that can be used to build hexadecimal
-specifications for colors. In case all arguments are integers the
-value range is taken to be from 0 to 255. Otherwise (i.e. when at
-least one of the arguments is a float) the value range from 0.0
-to 1.0.
-
-This macro is internal to the library."
-  `(liquorice-base-dsl
-    (cl-macrolet ((fg (color &rest faces)
-                    `(attrs (:foreground ,color) ,@faces))
-                  (bg (color &rest faces)
-                    `(attrs (:background ,color) ,@faces)))
-      (cl-flet ((rgb (r g b)
-                  (liquorice-rgb r g b))
-                (gray (i)
-                  (liquorice-rgb i i i)))
-        ,@body))))
-
-(defun liquorice-theme-args-from-internal-desc (desc)
-  "Transforms the internal face description DESC into form that
-can be fed directly to Emacs' face setting functions such as
-CUSTOM-SET-FACES.
-
-This function is internal to the library."
-  (mapcar (lambda (face-desc)
-            `(,(car face-desc) ((t ,@(cdr face-desc)))))
-          desc))
-
-(defmacro liquorice-build-set-faces-args (&rest body)
+(defmacro liquorice-build-face-specs (&rest body)
   "A domain specific language for specifying font faces. Should
 be used in conjunction with some of the Emacs font specifying
 functions like CUSTOM-SET-FACES or CUSTOM-THEME-SET-FACES.
@@ -240,7 +213,7 @@ functions like CUSTOM-SET-FACES or CUSTOM-THEME-SET-FACES.
 Usage example:
 
     (apply #'custom-set-faces
-           (liquorice-build-set-faces-args
+           (liquorice-build-face-specs
              (let ((funny-red (rgb 0.5 0.1 0.1))
                    (radiant-green (rgb 0.0 1.0 0.7))
                    (dull-gray (gray 0.8)))
@@ -248,8 +221,8 @@ Usage example:
                (fg dull-gray default)
                (fg radiant-green fringe))))"
   (declare (indent 0))
-  `(liquorice-theme-args-from-internal-desc
-    (liquorice-dsl
+  `(liquorice-desc-to-face-specs
+    (liquorice-build-desc
      ,@body)))
 
 (provide 'liquorice)

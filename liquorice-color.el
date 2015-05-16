@@ -288,4 +288,38 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                                alpha))
             (liquorice-linspace 0.0 1.0 steps))))
 
+;;;; Predicates
+
+(defun liquorice-color-p (val)
+  "Tests whether VAL is a color."
+  (and (consp val)
+       (case (car val)
+         (:srgb t)
+         (:xyz t)
+         (:lab t)
+         (:lch-ab t)
+         (:luv t)
+         (:lch-uv t)
+         (:hsl t) )))
+
+;;;; Instantiate colors
+
+(defun liquorice-srgb (r g b)
+  "Construct an sRGB color.  If *all* arguments are integers then
+their value range is assumed to be from 0 to 255. Otherwise,
+i.e. when at least one of the arguments is a float, the value
+range is assumed to be from 0.0 to 1.0. Arguments values are
+clamped to the assumed value range.
+
+This function is internal to the library."
+  (if (or (floatp r) (floatp g) (floatp b))
+      (list :srgb
+            (color-clamp (float r))
+            (color-clamp (float g))
+            (color-clamp (float b)))
+    (list :srgb
+          (color-clamp (/ r 255.0))
+          (color-clamp (/ g 255.0))
+          (color-clamp (/ b 255.0)))))
+
 (provide 'liquorice-color)
