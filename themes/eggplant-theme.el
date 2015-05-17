@@ -23,34 +23,54 @@
 
 (apply #'custom-set-faces
        (liquorice-build-face-specs
-         (let ((bg-color (rgb 150 70 124))
-               (bg-hl-line (rgb 138 56 132))
-               (fg-strong (gray 1.0))
-               ;; Comments etc.
-               (passive-foreground (rgb 150 180 165))
-               ;; For line numbers and other information that is not the
-               ;; content proper.
-               (fg-non-content (gray 0.0))
-               ;; For modelines
-               (alternative-background (rgb 80 137 116))
-               ;; For neutral text
-               (celeste-gray "#d5d7d0")
-               ;; Highlighted text
-               ;; Literal values, constants, quotes, etc.
-               (chateu-green "#43b25e")
-               ;; Keywords, prompts, user interface hilights etc.
-               (shakespeare-blue "#4f9db0")
-               ;; For names of stuff at the point of definition.
-               (tussock-brown "#b99246")
-               ;; The primary attention color
-               (bright-red "#ff0000")
-               ;; The secondary attention color
-               (yellow "yellow")
-               ;; Inactive background elements
-               (passive-background (gray 0.1))
-               ;; There shouldn't be any of these
-               (undefined "violet")
-               (dark-red (rgb 0.25 0.0 0.0)))
+         (let* ((bg-color (rgb 150 70 124))
+
+                ;; In-focus additions in diffs etc.
+                (pos-bg-active (liquorice-alter-color bg-color
+                                 (set-hue 120.0)
+                                 (alter-lightness -5.0)
+                                 (alter-chroma +40.0)))
+                ;; Out of focus additions in diffs etc.
+                (pos-bg-inactive (liquorice-blend bg-color
+                                                  pos-bg-active
+                                                  0.75))
+                ;; In-focus deletions in diffs etc.
+                (neg-bg-active (liquorice-alter-color bg-color
+                                 (set-hue 5.0)
+                                 (alter-lightness -5.0)
+                                 (alter-chroma +40.0)))
+                ;; Out of focus deletions in diffs etc.
+                (neg-bg-inactive (liquorice-blend bg-color
+                                                  neg-bg-active
+                                                  0.75))
+
+                (bg-hl-line (rgb 138 56 132))
+                (fg-strong (gray 1.0))
+                ;; Comments etc.
+                (passive-foreground (rgb 150 180 165))
+                ;; For line numbers and other information that is not the
+                ;; content proper.
+                (fg-non-content (gray 0.0))
+                ;; For modelines
+                (alternative-background (rgb 80 137 116))
+                ;; For neutral text
+                (celeste-gray "#d5d7d0")
+                ;; Highlighted text
+                ;; Literal values, constants, quotes, etc.
+                (chateu-green "#43b25e")
+                ;; Keywords, prompts, user interface hilights etc.
+                (shakespeare-blue "#4f9db0")
+                ;; For names of stuff at the point of definition.
+                (tussock-brown "#b99246")
+                ;; The primary attention color
+                (bright-red "#ff0000")
+                ;; The secondary attention color
+                (yellow "yellow")
+                ;; Inactive background elements
+                (passive-background (gray 0.1))
+                ;; There shouldn't be any of these
+                (undefined "violet")
+                (dark-red (rgb 0.25 0.0 0.0)))
            (desc
             (bg bg-color
                 default
@@ -60,12 +80,12 @@
                 default)
 
             (attrs (:weight 'normal
-                    :slant 'normal
-                    :underline nil
-                    :overline nil
-                    :strike-through nil
-                    :box nil
-                    :inherit nil)
+                            :slant 'normal
+                            :underline nil
+                            :overline nil
+                            :strike-through nil
+                            :box nil
+                            :inherit nil)
                    linum)
             (fg fg-non-content linum)
 
@@ -81,9 +101,11 @@
             (fg shakespeare-blue link)
             (fg tussock-brown link-visited)
 
+            ;; TODO: Combine this one with the magit highlights
             (attrs (:background bg-hl-line
                     :foreground nil)
-                   hl-line)
+                   hl-line
+                   magit-section-highlight)
 
             ;; Modeline and vertical window border
             (liquorice-mode-line-desc fg-strong
@@ -128,7 +150,7 @@
             ;; Except isearch is special
 
             (attrs (:foreground bg-color
-                    :background bright-red)
+                                :background bright-red)
                    isearch)
 
             ;; Outline
@@ -229,4 +251,44 @@
                 markdown-list-face
                 markdown-math-face)
             (fg bright-red
-                markdown-missing-link-face)))))
+                markdown-missing-link-face)
+
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            ;; Magit
+
+            (bg nil
+                magit-section-heading)
+            (attrs (:foreground "yellow" :background nil :border nil)
+                   magit-branch-local
+                   magit-branch-remote
+                   magit-branch-current)
+            (bg pos-bg-inactive magit-diff-added)
+            (bg pos-bg-active magit-diff-added-highlight)
+            (bg neg-bg-inactive magit-diff-removed)
+            (bg neg-bg-active magit-diff-removed-highlight)
+            (bg nil magit-diff-context)
+            (bg bg-hl-line magit-diff-context-highlight)
+            ;; magit-diff-base
+            ;; magit-diff-base-highlight
+            ;; magit-diff-conflict-heading
+            ;;
+            ;;
+            ;; magit-diff-file-heading
+            ;; magit-diff-file-heading-highlight
+            ;; magit-diff-file-heading-selection
+            ;; magit-diff-hunk-heading
+            ;; magit-diff-hunk-heading-highlight
+            ;; magit-diff-hunk-heading-selection
+            ;; magit-diff-lines-boundary
+            ;; magit-diff-lines-heading
+            ;; magit-diff-our
+            ;; magit-diff-our-highlight
+            ;; magit-diff-their
+            ;; magit-diff-their-highlight
+            ;; magit-diff-whitespace-warning
+
+            ;; Diff modes
+            (liquorice-magit-diff-desc pos-bg-active
+                                       pos-bg-inactive
+                                       neg-bg-active
+                                       neg-bg-inactive)))))
