@@ -32,10 +32,13 @@
 (defun liquorice-ang-interp (from to alpha)
   (let* ((mod-from (mod from 360.0))
          (mod-to (mod to 360.0))
-         (act-to (if (< (mod (- mod-to mod-from) 360.0)
-                        (mod (- mod-from mod-to) 360.0))
+         (alt-to (+ mod-to (if (<= mod-to mod-from)
+                               360.0
+                             -360.0)))
+         (act-to (if (< (abs (- mod-to mod-from))
+                        (abs (- alt-to mod-from)))
                      mod-to
-                   (- mod-to 360.0))))
+                   alt-to)))
     (mod (liquorice-lin-interp mod-from act-to alpha) 360.0)))
 
 (provide 'liquorice-math)
