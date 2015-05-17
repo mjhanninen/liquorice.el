@@ -288,6 +288,40 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                                alpha))
             (liquorice-linspace 0.0 1.0 steps))))
 
+(defun liquorice-set-lightness (color new-L)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H)
+                (liquorice-to-lch-uv color)))
+    (list :lch-uv (min 100.0 (max 0.0 new-L)) C H)))
+
+(defun liquorice-alter-lightness (color inc-L)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H)
+                (liquorice-to-lch-uv color)))
+    (list :lch-uv (min 100.0 (max 0.0 (+ L inc-L))) C H)))
+
+(defun liquorice-alter-chroma (color inc-C)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H) (liquorice-to-lch-uv color)))
+    (list :lch-uv
+          L
+          (min 100.0 (max 0.0 (+ C inc-C)))
+          H)))
+
+(defun liquorice-set-hue (color new-H)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H)
+                (liquorice-to-lch-uv color)))
+    (list :lch-uv L C (mod new-H 360.0))))
+
+(defun liquorice-alter-hue (color angle)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H)
+                (liquorice-to-lch-uv color)))
+    (list :lch-uv L C (mod (+ H angle) 360.0))))
+
+(defun liquorice-copy-hue (ref-color hue-color)
+  (pcase-let* ((`(:lch-uv ,ref-L ,ref-C ,ref-H)
+                (liquorice-to-lch-uv ref-color))
+               (`(:lch-uv ,hue-L ,hue-C ,hue-H)
+                (liquorice-to-lch-uv hue-color)))
+    (list :lch-uv ref-L ref-C hue-H)))
+
 ;;;; Predicates
 
 (defun liquorice-color-p (val)
