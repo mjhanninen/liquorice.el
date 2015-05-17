@@ -268,7 +268,6 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
   (pcase-let ((`(:hsl ,H ,S ,L) (liquorice-to-hsl color)))
     (cons :hsl (color-saturate-hsl H S L percent))))
 
-
 (defun liquorice-blend (from-color to-color alpha)
   (pcase-let* ((`(:lch-uv ,from-L ,from-C ,from-H)
                 (liquorice-to-lch-uv from-color))
@@ -298,6 +297,13 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                 (liquorice-to-lch-uv color)))
     (list :lch-uv (min 100.0 (max 0.0 (+ L inc-L))) C H)))
 
+(defun liquorice-set-chroma (color new-C)
+  (pcase-let* ((`(:lch-uv ,L ,C ,H) (liquorice-to-lch-uv color)))
+    (list :lch-uv
+          L
+          (min 100.0 (max 0.0 new-C))
+          H)))
+
 (defun liquorice-alter-chroma (color inc-C)
   (pcase-let* ((`(:lch-uv ,L ,C ,H) (liquorice-to-lch-uv color)))
     (list :lch-uv
@@ -321,6 +327,27 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                (`(:lch-uv ,hue-L ,hue-C ,hue-H)
                 (liquorice-to-lch-uv hue-color)))
     (list :lch-uv ref-L ref-C hue-H)))
+
+(defmacro liquorice-alter-color (init-color &rest body)
+  (declare (indent 1))
+  (let ((result-sym (cl-gensym "result-")))
+    ;; FIXME: Replace `copy-list' with something that also ensures that
+    ;; `init-color' is a color (and not a name of a color).
+    `(let ((,result-sym (copy-list ,init-color)))
+       (cl-flet ((set-lightness (L)
+                   (setq ,result-sym (liquorice-set-lightness ,result-sym L)))
+                 (alter-lightness (L)
+                   (setq ,result-sym (liquorice-alter-lightness ,result-sym L)))
+                 (set-chroma (C)
+                   (setq ,result-sym (liquorice-set-chroma ,result-sym C)))
+                 (alter-chroma (C)
+                   (setq ,result-sym (liquorice-alter-chroma ,result-sym C)))
+                 (set-hue (H)
+                   (setq ,result-sym (liquorice-set-hue ,result-sym H)))
+                 (alter-hue (H)
+                   (setq ,result-sym (liquorice-alter-hue ,result-sym H))))
+         (progn ,@body)
+         ,result-sym))))
 
 ;;;; Predicates
 
