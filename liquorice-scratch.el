@@ -5,9 +5,14 @@
   (let ((color-str (liquorice-to-string color)))
     (insert color-str
             " ("
-            (let ((sample " f "))
+            (let ((sample " f  f "))
               (put-text-property 0 3
-                                 'face `(:background ,color-str)
+                                 'face `(:background ,color-str
+                                         :foreground nil)
+                                 sample)
+              (put-text-property 3 6
+                                 'face `(:background nil
+                                         :foreground ,color-str)
                                  sample)
               sample)
             ") "
