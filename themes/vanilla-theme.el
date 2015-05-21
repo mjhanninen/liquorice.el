@@ -263,4 +263,34 @@
                 markdown-list-face
                 markdown-math-face)
             (fg bright-red
-                markdown-missing-link-face)))))
+                markdown-missing-link-face)
+
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            ;; Magit
+
+            (bg chateu-green-bg-1 magit-diff-added)
+            (bg chateu-green-bg-2 magit-diff-added-highlight)
+            (bg japonica-bg-1 magit-diff-removed)
+            (bg japonica-bg-2 magit-diff-removed-highlight)
+            (bg nil magit-diff-context)
+            (bg concrete
+                magit-diff-context-highlight
+                magit-section-highlight)
+
+            (attrs (:background nil
+                    :border nil)
+                   magit-branch-local
+                   magit-branch-remote
+                   magit-branch-current)
+
+            (fg pacific-blue magit-branch-current)
+            (fg pacific-blue-lt magit-branch-local)
+            (fg alpine-lt magit-branch-remote)
+
+            (fg chateu-green magit-hash)
+            (fg mine-shaft
+                magit-log-author
+                magit-log-date
+                magit-log-graph)
+
+            ))))
