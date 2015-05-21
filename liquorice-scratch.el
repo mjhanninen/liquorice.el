@@ -32,4 +32,14 @@
   (apply #'insert-color-strip
          (liquorice-ramp from-color to-color steps)))
 
+(defun luv-lightness-bug (L)
+  (insert "GOOD:\n\n")
+  (insert-color-ramp (list :lch-uv L 65.0 1.0)
+                     (list :lch-uv L 65.0 179)
+                     25)
+  (insert "\nBAD:\n\n")
+  (insert-color-ramp (list :lch-uv L 65.0 181.0)
+                     (list :lch-uv L 65.0 359.0)
+                     25))
+
 (provide 'liquorice-scratch)
