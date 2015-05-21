@@ -22,44 +22,86 @@
 
 (apply #'custom-set-faces
        (liquorice-build-face-specs
-         (let ((bg-color (gray 1.0))
-               (fg-strong (gray 0.0))
-               (fg-feint (gray 0.9))
-               ;; For neutral text
-               (celeste-gray "#d5d7d0")
-               ;; Highlighted text
-               ;; Literal values, constants, quotes, etc.
-               (chateu-green "#43b25e")
-               ;; Keywords, prompts, user interface hilights etc.
-               (shakespeare-blue "#4f9db0")
-               ;; For names of stuff at the point of definition.
-               (tussock-brown "#b99246")
-               ;; The primary attention color
-               (bright-red "#ff0000")
-               ;; The secondary attention color
-               (yellow "yellow")
-               ;; Inactive background elements
-               (passive-background (gray 0.1))
-               ;; Line numbers and stuff like that
-               (passive-foreground (gray 0.7))
-               ;; There shouldn't be any of these
-               (undefined "violet")
-               (dark-red (rgb 0.25 0.0 0.0)))
+         (let* ((bg-color (gray 1.0))
+                (celeste-gray  "#d5d7d0")
+                (fg-feint (gray 0.9))
+                ;; Dark target in gradients
+                (tuna (alter-color (gray 0.2)
+                                   (set-hue 270)))
+                ;; For neutral text
+                (mine-shaft (gray 0.25))
+                (concrete (gray 0.95))
+                ;; Highlighted text, literal values, constants, quotes, etc.
+                (chateu-green "#3ca355")
+                (chateu-green-lt (alter-color chateu-green
+                                   (set-lightness 70.0)
+                                   (set-chroma 55.0)))
+                (chateu-green-bg-1 (alter-color chateu-green
+                                     (set-lightness 95.0)
+                                     (set-chroma 20.0)))
+                (chateu-green-bg-2 (alter-color chateu-green
+                                     (set-lightness 85.0)
+                                     (set-chroma 40.0)))
+                ;; Keywords, important language bits, prompts, user interface
+                ;; hilights etc.
+                (pacific-blue "#00a0c1")
+                (pacific-blue-lt (alter-color pacific-blue
+                                   (set-lightness 70.0)
+                                   (set-chroma 55.0)))
+                (pacific-blue-bg-1 (alter-color pacific-blue
+                                     (set-lightness 95.0)
+                                     (set-chroma 20.0)))
+                (pacific-blue-bg-2 (alter-color pacific-blue
+                                     (set-lightness 85.0)
+                                     (set-chroma 40.0)))
+                ;; For names of stuff at the point of definition.
+                (alpine "#b38a2c")
+                (alpine-lt (alter-color alpine
+                             (set-lightness 70.0)
+                             (set-chroma 55.0)))
+                (alpine-bg-1 (alter-color alpine
+                               (set-lightness 95.0)
+                               (set-chroma 20.0)))
+                (alpine-bg-2 (alter-color alpine
+                               (set-lightness 85.0)
+                               (set-chroma 40.0)))
+                ;; Rarely used color; mainly negative diffs, redactions etc.
+                (japonica "#da7176")
+                (japonica-lt (alter-color japonica
+                               (set-lightness 70.0)
+                               (set-chroma 55.0)))
+                (japonica-bg-1 (alter-color japonica
+                                 (set-lightness 95.0)
+                                 (set-chroma 20.0)))
+                (japonica-bg-2 (alter-color japonica
+                                 (set-lightness 85.0)
+                                 (set-chroma 40.0)))
+                ;; The primary attention color
+                (bright-red "#ff0000")
+                ;; The secondary attention color
+                (yellow "yellow")
+                ;; Inactive background elements
+                (passive-background (gray 0.1))
+                ;; Line numbers and stuff like that
+                (passive-foreground (gray 0.7))
+                ;; There shouldn't be any of these
+                (undefined "violet"))
+
            (desc
             (bg bg-color
                 default
                 linum)
 
-            (fg fg-strong
+            (fg mine-shaft
                 default)
 
             (attrs (:weight 'normal
-                    :slant 'normal
-                    :underline nil
-                    :overline nil
-                    :strike-through nil
-                    :box nil
-                    :inherit nil)
+                            :slant 'normal
+                            :underline nil
+                            :overline nil
+                            :strike-through nil
+                            :box nil
+                            :inherit nil)
                    linum)
             (fg fg-feint
                 linum)
@@ -73,8 +115,8 @@
             (attrs (:underline t)
                    link
                    link-visited)
-            (fg shakespeare-blue link)
-            (fg tussock-brown link-visited)
+            (fg pacific-blue link)
+            (fg alpine link-visited)
 
             (attrs (:background (gray 0.95)
                     :foreground nil)
@@ -90,11 +132,11 @@
                     :foreground yellow)
                    mode-line-buffer-id)
 
-            (fg shakespeare-blue
+            (fg pacific-blue
                 minibuffer-prompt
                 completions-first-difference)
 
-            (bg "navy"
+            (bg alpine-bg-1
                 region)
 
             ;; TODO: Rethink this comment
@@ -103,13 +145,13 @@
             ;; coded background with the yellow signalling something is
             ;; oddly wrong.
 
-            (fg fg-strong
+            (fg mine-shaft
                 isearch-fail
                 lazy-highlight
                 show-paren-match-face
                 show-paren-mismatch-face)
 
-            (bg shakespeare-blue
+            (bg japonica-bg-1
                 lazy-highlight
                 show-paren-match-face)
 
@@ -125,7 +167,7 @@
 
             ;; Outline
 
-            (fg fg-strong
+            (fg mine-shaft
                 outline-1
                 outline-2
                 outline-3
@@ -149,12 +191,12 @@
                 font-lock-regexp-grouping-construct
                 font-lock-constant-face)
 
-            (fg shakespeare-blue
+            (fg pacific-blue
                 font-lock-builtin-face
                 font-lock-keyword-face
                 font-lock-type-face)
 
-            (fg tussock-brown
+            (fg alpine
                 font-lock-function-name-face
                 font-lock-variable-name-face)
 
@@ -164,7 +206,7 @@
 
             ;; Dired
 
-            (fg shakespeare-blue
+            (fg pacific-blue
                 dired-directory
                 dired-symlink)
 
@@ -173,7 +215,7 @@
                 dired-mark
                 dired-marked)
 
-            (fg fg-strong
+            (fg mine-shaft
                 dired-header)
 
             (fg passive-foreground
@@ -182,7 +224,7 @@
 
             ;; Compilation
 
-            (fg shakespeare-blue
+            (fg pacific-blue
                 compilation-column-number
                 compilation-line-number)
 
@@ -195,10 +237,10 @@
 
             ;; Markdown
 
-            (fg shakespeare-blue
+            (fg pacific-blue
                 markdown-blockquote-face
                 markdown-comment-face)
-            (fg fg-strong
+            (fg mine-shaft
                 markdown-header-face
                 markdown-header-face-1
                 markdown-header-face-2
@@ -206,13 +248,13 @@
                 markdown-header-face-4
                 markdown-header-face-5
                 markdown-header-face-6)
-            (fg fg-strong
+            (fg mine-shaft
                 markdown-bold-face
                 markdown-italic-face)
             (fg chateu-green
                 markdown-inline-code-face
                 markdown-pre-face)
-            (fg tussock-brown
+            (fg alpine
                 markdown-link-face
                 markdown-link-title-face
                 markdown-url-face
