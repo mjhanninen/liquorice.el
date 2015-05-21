@@ -333,7 +333,7 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
   (let ((result-sym (cl-gensym "result-")))
     ;; FIXME: Replace `copy-list' with something that also ensures that
     ;; `init-color' is a color (and not a name of a color).
-    `(let ((,result-sym (copy-list ,init-color)))
+    `(let ((,result-sym (copy-list (liquorice-to-lch-uv ,init-color))))
        (cl-flet ((set-lightness (L)
                    (setq ,result-sym (liquorice-set-lightness ,result-sym L)))
                  (alter-lightness (L)
