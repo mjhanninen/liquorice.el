@@ -266,6 +266,20 @@
 
             ;; Magit
 
+            (attrs (:weight nil)
+                   magit-diff-file-heading
+                   magit-diff-file-heading-highlight)
+
+            (attrs (:foreground mine-shaft
+                    :background alpine-bg-1)
+                   magit-diff-file-heading
+                   magit-diff-hunk-heading)
+
+            (attrs (:foreground mine-shaft
+                    :background alpine-bg-2)
+                   magit-diff-file-heading-highlight
+                   magit-diff-hunk-heading-highlight)
+
             (bg chateu-green-bg-1 magit-diff-added)
             (bg chateu-green-bg-2 magit-diff-added-highlight)
             (bg japonica-bg-1 magit-diff-removed)
@@ -280,12 +294,15 @@
                    magit-branch-local
                    magit-branch-remote
                    magit-branch-current)
+            (fg alpine
+                magit-branch-current)
+            (fg alpine-lt
+                magit-branch-local)
+            (fg chateu-green
+                magit-branch-remote)
 
-            (fg pacific-blue magit-branch-current)
-            (fg pacific-blue-lt magit-branch-local)
-            (fg alpine-lt magit-branch-remote)
+            (fg pacific-blue magit-hash)
 
-            (fg chateu-green magit-hash)
             (fg mine-shaft
                 magit-log-author
                 magit-log-date
