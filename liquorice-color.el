@@ -345,7 +345,9 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
                  (set-hue (H)
                    (setq ,result-sym (liquorice-set-hue ,result-sym H)))
                  (alter-hue (H)
-                   (setq ,result-sym (liquorice-alter-hue ,result-sym H))))
+                   (setq ,result-sym (liquorice-alter-hue ,result-sym H)))
+                 (blend-to (color amount)
+                   (setq ,result-sym (liquorice-blend ,result-sym color amount))))
          (progn ,@body)
          ,result-sym))))
 
