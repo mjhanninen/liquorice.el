@@ -266,10 +266,6 @@
 
             ;; Magit
 
-            (attrs (:weight nil)
-                   magit-diff-file-heading
-                   magit-diff-file-heading-highlight)
-
             (attrs (:foreground mine-shaft
                     :background alpine-bg-1)
                    magit-diff-file-heading
