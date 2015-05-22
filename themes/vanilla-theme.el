@@ -23,7 +23,6 @@
 (apply #'custom-set-faces
        (liquorice-build-face-specs
          (let* ((bg-color (gray 1.0))
-                (celeste-gray  "#d5d7d0")
                 (fg-feint (gray 0.9))
                 ;; Dark target in gradients
                 (tuna (alter-color (gray 0.2)
@@ -65,6 +64,8 @@
                 (alpine-bg-2 (alter-color alpine
                                (set-lightness 85.0)
                                (set-chroma 40.0)))
+                (alpine-dark (alter-color alpine
+                               (blend-to mine-shaft 0.6)))
                 ;; Rarely used color; mainly negative diffs, redactions etc.
                 (japonica "#da7176")
                 (japonica-lt (alter-color japonica
@@ -122,14 +123,25 @@
                     :foreground nil)
                    hl-line)
 
-            (fg celeste-gray
-                mode-line
+
+            ;; Mode line and prompt
+
+            (fg alpine-bg-1
+                mode-line)
+
+            (bg alpine-bg-2
+                mode-line-inactive)
+            (fg alpine
                 mode-line-inactive)
 
-            ;; Lets emphasise the buffer ID a bit
+            (fg alpine-bg-2
+                vertical-border)
+
+            (bg mine-shaft
+                mode-line)
 
             (attrs (:background nil
-                    :foreground yellow)
+                    :foreground bg-color)
                    mode-line-buffer-id)
 
             (fg pacific-blue
@@ -139,22 +151,16 @@
             (bg alpine-bg-1
                 region)
 
-            ;; Many of the emphasis things have black typeface on color
-            ;; coded background with the yellow signalling something is
-            ;; oddly wrong.
+            ;; Isearch & parentheses matching
 
-            (fg mine-shaft
-                show-paren-match-face
-                show-paren-mismatch-face)
-
-            (bg alpine-bg-2
-                show-paren-match-face)
-
-            ;; Isearch
+            (attrs (:foreground mine-shaft
+                    :background alpine-bg-2)
+                   show-paren-match-face)
 
             (attrs (:foreground mine-shaft
                     :background alpine-bg-2)
                    isearch)
+
             (attrs (:foreground nil
                     :background alpine-bg-1)
                    lazy-highlight)
@@ -237,7 +243,6 @@
             ;; Markdown
 
             (fg pacific-blue
-                markdown-blockquote-face
                 markdown-comment-face)
             (fg mine-shaft
                 markdown-header-face
@@ -246,21 +251,21 @@
                 markdown-header-face-3
                 markdown-header-face-4
                 markdown-header-face-5
-                markdown-header-face-6)
-            (fg mine-shaft
+                markdown-header-face-6
+                markdown-list-face
+                markdown-math-face)
+            (fg pacific-blue
                 markdown-bold-face
                 markdown-italic-face)
             (fg chateu-green
                 markdown-inline-code-face
-                markdown-pre-face)
+                markdown-pre-face
+                markdown-blockquote-face)
             (fg alpine
                 markdown-link-face
                 markdown-link-title-face
                 markdown-url-face
                 markdown-reference-face)
-            (fg celeste-gray
-                markdown-list-face
-                markdown-math-face)
             (fg bright-red
                 markdown-missing-link-face)
 
