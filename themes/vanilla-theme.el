@@ -139,31 +139,30 @@
             (bg alpine-bg-1
                 region)
 
-            ;; TODO: Rethink this comment
-
             ;; Many of the emphasis things have black typeface on color
             ;; coded background with the yellow signalling something is
             ;; oddly wrong.
 
             (fg mine-shaft
-                isearch-fail
-                lazy-highlight
                 show-paren-match-face
                 show-paren-mismatch-face)
 
-            (bg japonica-bg-1
-                lazy-highlight
+            (bg alpine-bg-2
                 show-paren-match-face)
 
-            (bg yellow
-                isearch-fail
-                show-paren-mismatch-face)
+            ;; Isearch
 
-            ;; Except isearch is special
+            (attrs (:foreground mine-shaft
+                    :background alpine-bg-2)
+                   isearch)
+            (attrs (:foreground nil
+                    :background alpine-bg-1)
+                   lazy-highlight)
 
             (attrs (:foreground bg-color
                     :background bright-red)
-                   isearch)
+                   isearch-fail
+                   show-paren-mismatch-face)
 
             ;; Outline
 
@@ -265,7 +264,6 @@
             (fg bright-red
                 markdown-missing-link-face)
 
-            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
             ;; Magit
 
             (bg chateu-green-bg-1 magit-diff-added)
