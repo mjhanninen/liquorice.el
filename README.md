@@ -1,12 +1,22 @@
 # Liquorice
 
-**Liquorice** is a dark color theme for Emacs based on the author's old
-Salmiakki theme (*salmiakki* is *liquorice* in English).
+**Liquorice** is an Emacs library for helping color theme definition and a set
+of accompanying color themes. The included themes are:
 
+- *Liquorice*: a dark color theme based on the author's old Salmiakki
+  (eng. *liquorice*) theme.
+
+- *Vanilla*: a light color theme with that should go well with Liquorice
+  theme.
+
+- *Red October*: a dark color theme.
+
+- *Eggplant*: an experimental mid-range color theme strives to retain good
+  contrast.
 
 ## Status
 
-Very much **work-in-progress** as of 2015-05-19.
+Very much **work-in-progress** as of 2015-05-23.
 
 
 ## Installing
