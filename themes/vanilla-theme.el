@@ -97,12 +97,12 @@
                 default)
 
             (attrs (:weight 'normal
-                            :slant 'normal
-                            :underline nil
-                            :overline nil
-                            :strike-through nil
-                            :box nil
-                            :inherit nil)
+                    :slant 'normal
+                    :underline nil
+                    :overline nil
+                    :strike-through nil
+                    :box nil
+                    :inherit nil)
                    linum)
             (fg fg-feint
                 linum)
