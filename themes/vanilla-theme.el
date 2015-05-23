@@ -107,9 +107,6 @@
        (fg fg-feint
            linum)
 
-       (bg passive-background
-           fringe)
-
        (fg bright-red
            warning)
 
@@ -126,19 +123,16 @@
 
        ;; Mode line and prompt
 
-       (fg alpine-bg-1
-           mode-line)
-
-       (bg alpine-bg-2
-           mode-line-inactive)
-       (fg alpine
-           mode-line-inactive)
-
+       (fg alpine-bg-1 mode-line)
+       (bg mine-shaft mode-line)
+       (bg alpine-bg-2 mode-line-inactive)
+       (fg alpine mode-line-inactive)
        (fg alpine-bg-2
            vertical-border)
+       (bg alpine-bg-1
+           fringe)
 
-       (bg mine-shaft
-           mode-line)
+
 
        (attrs (:background nil
                :foreground white)
