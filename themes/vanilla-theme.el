@@ -24,11 +24,12 @@
        (liquorice-build-face-specs
          (let* ((bg-color (gray 1.0))
                 (fg-feint (gray 0.9))
-                ;; Dark target in gradients
-                (tuna (alter-color (gray 0.2)
-                                   (set-hue 270)))
-                ;; For neutral text
-                (mine-shaft (gray 0.25))
+                ;; For neutral text; the (invisible) hue hack forces the color
+                ;; into the LCH(uv) space and when the color is used as a
+                ;; blending target the hue moves towards the hue specified
+                ;; here.  It is a hack, I know.
+                (mine-shaft (alter-color (gray 0.25)
+                              (set-hue 270)))
                 (concrete (gray 0.95))
                 ;; Highlighted text, literal values, constants, quotes, etc.
                 (chateu-green "#3ca355")
