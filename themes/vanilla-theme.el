@@ -221,7 +221,7 @@
            dired-ignored
            dired-warning)
 
-            ;; Compilation
+       ;; Compilation
 
        (fg pacific-blue
            compilation-column-number
