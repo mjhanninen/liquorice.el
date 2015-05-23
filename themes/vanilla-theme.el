@@ -21,7 +21,7 @@
 
 (defun liquorice-build-vanilla-desc ()
   (liquorice-build-desc
-    (let* ((bg-color (gray 1.0))
+    (let* ((white (gray 1.0))
            (fg-feint (gray 0.9))
            ;; For neutral text; the (invisible) hue hack forces the color
            ;; into the LCH(uv) space and when the color is used as a
@@ -89,7 +89,7 @@
            (undefined "violet"))
 
       (desc
-       (bg bg-color
+       (bg white
            default
            linum)
 
@@ -141,7 +141,7 @@
            mode-line)
 
        (attrs (:background nil
-               :foreground bg-color)
+               :foreground white)
               mode-line-buffer-id)
 
        (fg pacific-blue
@@ -165,7 +165,7 @@
                :background alpine-bg-1)
               lazy-highlight)
 
-       (attrs (:foreground bg-color
+       (attrs (:foreground white
                :background bright-red)
               isearch-fail
               show-paren-mismatch-face)
