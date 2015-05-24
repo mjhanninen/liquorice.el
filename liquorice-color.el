@@ -47,37 +47,37 @@ COLOR-NAME-TO-RGB."
 (defun liquorice-srgb-to-hsl (srgb-color)
   "Converts SRGB-COLOR from the sRGB color space to the HSL color
 space."
-  (assert (eq (car srgb-color) :srgb) "Expected an sRGB triplet")
+  (cl-assert (eq (car srgb-color) :srgb) "Expected an sRGB triplet")
   (cons :hsl (apply #'color-hsl-to-rgb (cdr srgb-color))))
 
 (defun liquorice-hsl-to-srgb (hsl-color)
   "Converts HSL-COLOR from the HSL color space to the sRGB color
 space."
-  (assert (eq (car hsl-color) :hsl) "Expected an HSL triplet")
+  (cl-assert (eq (car hsl-color) :hsl) "Expected an HSL triplet")
   (cons :srgb (apply #'color-rgb-to-hsl (cdr hsl-color))))
 
 ;;; Conversions between sRGB and XYZ spaces
 
 (defun liquorice-xyz-to-srgb (xyz-color)
   "Converts XYZ-COLOR from the XYZ color space to the sRGB color space."
-  (assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
+  (cl-assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
   (cons :srgb (apply #'color-xyz-to-srgb (cdr xyz-color))))
 
 (defun liquorice-srgb-to-xyz (srgb-color)
   "Converts SRGB-COLOR from the sRGB color space to the XYZ color space."
-  (assert (eq (car srgb-color) :srgb) "Expected an sRGB triplet")
+  (cl-assert (eq (car srgb-color) :srgb) "Expected an sRGB triplet")
   (cons :xyz (apply #'color-srgb-to-xyz (cdr srgb-color))))
 
 ;;; Conversions between XYZ and Lab spaces
 
 (defun liquorice-xyz-to-lab (xyz-color)
   "Converts XYZ-COLOR from the XYZ color space to the Lab color space."
-  (assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
+  (cl-assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
   (cons :lab (apply #'color-xyz-to-lab (cdr xyz-color))))
 
 (defun liquorice-lab-to-xyz (lab-color)
   "Converts LAB-COLOR from the lab color space to the XYZ color space."
-  (assert (eq (car lab-color) :lab) "Expected a Lab triplet")
+  (cl-assert (eq (car lab-color) :lab) "Expected a Lab triplet")
   (cons :xyz (apply #'color-lab-to-xyz (cdr lab-color))))
 
 ;;; Conversions between Lab and LCH(ab) spaces
@@ -85,7 +85,7 @@ space."
 (defun liquorice-lab-to-lch-ab (lab-color)
   "Converts LAB-COLOR from the CIE-Lab color space to the LCH(ab)
 color space."
-  (assert (eq (car lab-color) :lab) "Expected a Lab triplet")
+  (cl-assert (eq (car lab-color) :lab) "Expected a Lab triplet")
   (pcase-let* ((`(,L ,a ,b) (cdr lab-color))
                (C (sqrt (+ (* a a) (* b b))))
                (H (mod (* 180.0 (/ (atan b a) pi)) 360.0)))
@@ -94,7 +94,7 @@ color space."
 (defun liquorice-lch-ab-to-lab (lch-color)
   "Converts LCH-COLOR from the LCH(ab) color space to the CIE-Lab
 color space."
-  (assert (eq (car lch-color) :lch-ab) "Expected a LCH(ab) triplet")
+  (cl-assert (eq (car lch-color) :lch-ab) "Expected a LCH(ab) triplet")
   (pcase-let* ((`(,L ,C ,H) (cdr lch-color))
                (h (/ (* pi H) 180.0))
                (a (* C (cos h)))
@@ -106,7 +106,7 @@ color space."
 (defun liquorice-xyz-to-luv (xyz-color)
   "Converts XYZ-COLOR from the XYZ color space to the CIE-Luv
 color space. Assumes CIE D65 white point."
-  (assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
+  (cl-assert (eq (car xyz-color) :xyz) "Expected a XYZ triplet")
   (pcase-let* ((`(,x ,y ,z) (cdr xyz-color))
                (`(,ref-x ,ref-y ,ref-z) color-d65-xyz)
                (y-rel (/ y ref-y))
@@ -132,7 +132,7 @@ color space. Assumes CIE D65 white point."
 (defun liquorice-luv-to-xyz (luv-color)
   "Converts LUV-COLOR from the CIE-Luv color space to the XYZ
 color space. Assumes CIE D65 white point."
-  (assert (eq (car luv-color) :luv) "Expected a Luv triplet")
+  (cl-assert (eq (car luv-color) :luv) "Expected a Luv triplet")
   (pcase-let* ((`(,L ,u ,v) (cdr luv-color))
                (`(,ref-x ,ref-y ,ref-z) color-d65-xyz)
                (inv-denom-ref (/ 1.0
@@ -164,7 +164,7 @@ color space. Assumes CIE D65 white point."
 (defun liquorice-luv-to-lch-uv (luv-color)
   "Converts LUV-COLOR from the CIE-Luv color space to the LCH(uv)
 color space."
-  (assert (eq (car luv-color) :luv) "Expected a Luv triplet")
+  (cl-assert (eq (car luv-color) :luv) "Expected a Luv triplet")
   (pcase-let* ((`(,L ,u ,v) (cdr luv-color))
                (C (sqrt (+ (* u u) (* v v))))
                (H (mod (* 180.0 (/ (atan v u) pi)) 360.0)))
@@ -173,7 +173,7 @@ color space."
 (defun liquorice-lch-uv-to-luv (lch-color)
   "Converts LCH-COLOR from the LCH(uv) color space to the CIE-Luv
 color space."
-  (assert (eq (car lch-color) :lch-uv) "Expected a LCH(uv) triplet")
+  (cl-assert (eq (car lch-color) :lch-uv) "Expected a LCH(uv) triplet")
   (pcase-let* ((`(,L ,C ,H) (cdr lch-color))
                (h (/ (* pi H) 180.0))
                (u (* C (cos h)))
@@ -333,7 +333,7 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
   (let ((result-sym (cl-gensym "result-")))
     ;; FIXME: Replace `copy-list' with something that also ensures that
     ;; `init-color' is a color (and not a name of a color).
-    `(let ((,result-sym (copy-list (liquorice-to-lch-uv ,init-color))))
+    `(let ((,result-sym (cl-copy-list (liquorice-to-lch-uv ,init-color))))
        (cl-flet ((set-lightness (L)
                    (setq ,result-sym (liquorice-set-lightness ,result-sym L)))
                  (alter-lightness (L)
@@ -356,7 +356,7 @@ Otherwise the macro just returns (the evaluated value of) COLOR."
 (defun liquorice-color-p (val)
   "Tests whether VAL is a color."
   (and (consp val)
-       (case (car val)
+       (cl-case (car val)
          (:srgb t)
          (:xyz t)
          (:lab t)

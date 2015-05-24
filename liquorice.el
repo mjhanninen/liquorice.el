@@ -44,7 +44,7 @@ with entries from RIGHT-PLIST overriding those from LEFT-PLIST.
 
 This function is internal to the library."
   (if left-plist
-      (let ((result (copy-list left-plist))
+      (let ((result (cl-copy-list left-plist))
             (right-head right-plist))
         (while right-head
           (plist-put result
